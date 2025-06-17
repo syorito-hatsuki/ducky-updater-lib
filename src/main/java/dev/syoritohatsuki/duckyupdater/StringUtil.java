@@ -10,13 +10,13 @@ import net.minecraft.util.Pair;
 
 public final class StringUtil {
 
-    public static String BOLD = "\u001B[1m";
-    public static String BRIGHT_GRAY = "\u001B[37m";
-    public static String BRIGHT_GREEN = "\u001B[92m";
-    public static String BRIGHT_RED = "\u001B[91m";
-    public static String GRAY = "\u001B[90m";
-    public static String RESET = "\u001B[0m";
-    public static String YELLOW = "\u001B[33m";
+    public final static String BOLD = "\u001B[1m";
+    public final static String BRIGHT_GRAY = "\u001B[37m";
+    public final static String BRIGHT_GREEN = "\u001B[92m";
+    public final static String BRIGHT_RED = "\u001B[91m";
+    public final static String GRAY = "\u001B[90m";
+    public final static String RESET = "\u001B[0m";
+    public final static String YELLOW = "\u001B[33m";
 
     public static String buildUrl(ModContainer modContainer) {
         var featured = false;
@@ -30,7 +30,7 @@ public final class StringUtil {
         var featuredObject = duckyUpdaterObject.get("featured");
         if (featuredObject != null) featured = featuredObject.getAsBoolean();
 
-        return "https://api.modrinth.com/v2/project/" + modrinthId.getAsString() + "/version?loaders=[%22fabric%22]&game_versions=[%22" + SharedConstants.getGameVersion().getName() + "%22]&featured=" + featured;
+        return "https://api.modrinth.com/v2/project/" + modrinthId.getAsString() + "/version?loaders=[%22fabric%22]&game_versions=[%22" + SharedConstants.getGameVersion().name() + "%22]&featured=" + featured;
     }
 
     public static String match(char[] oldVersion, char[] newVersion) {

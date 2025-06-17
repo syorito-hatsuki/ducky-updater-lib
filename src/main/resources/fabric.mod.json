@@ -34,8 +34,8 @@
     "duckyupdaterlib.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=${loaderVersion}",
+    "fabricloader": "*",
     "minecraft": ">=1.21.5",
-    "java": ">=${javaVersion}"
+    "java": "*"
   }
 }

@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin {
 
-    @Shadow public abstract void sendMessage(Text message, boolean overlay);
+    @Shadow
+    public abstract void sendMessage(Text message, boolean overlay);
 
     @Unique
     private static Boolean alreadyShowed = false;
@@ -30,22 +31,24 @@ public abstract class ClientPlayerEntityMixin {
     private void printUpdates(CallbackInfo ci) {
         if (alreadyShowed) return;
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            AtomicBoolean firstLine = new AtomicBoolean(true);
+        try (var executor = Executors.newSingleThreadExecutor()) {
+            executor.execute(() -> {
+                AtomicBoolean firstLine = new AtomicBoolean(true);
 
-            DuckyUpdater.getUpdateDataHashMap().forEach(((pair, updateData) -> {
-                if (firstLine.get()) {
-                    sendMessage(Text.literal("Updates available").styled(style ->
-                            style.withBold(true).withColor(Formatting.YELLOW)), false);
-                    firstLine.set(false);
-                }
-                sendMessage(Text.literal(" - ").append(StringUtil.updateText(pair, updateData)).styled(style ->
-                        style.withHoverEvent(
-                                new HoverEvent.ShowText(Text.literal(updateData.changelog()))
-                        ).withClickEvent(new ClickEvent.OpenUrl(URI.create(updateData.fileUrl())))
-                ), false);
-            }));
-        });
+                DuckyUpdater.getUpdateDataHashMap().forEach(((pair, updateData) -> {
+                    if (firstLine.get()) {
+                        sendMessage(Text.literal("Updates available").styled(style ->
+                                style.withBold(true).withColor(Formatting.YELLOW)), false);
+                        firstLine.set(false);
+                    }
+                    sendMessage(Text.literal(" - ").append(StringUtil.updateText(pair, updateData)).styled(style ->
+                            style.withHoverEvent(
+                                    new HoverEvent.ShowText(Text.literal(updateData.changelog()))
+                            ).withClickEvent(new ClickEvent.OpenUrl(URI.create(updateData.fileUrl())))
+                    ), false);
+                }));
+            });
+        }
 
         alreadyShowed = true;
     }
