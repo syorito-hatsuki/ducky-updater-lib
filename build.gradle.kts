@@ -1,3 +1,5 @@
+import com.modrinth.minotaur.TaskModrinthUpload
+
 val modVersion: String by project
 val loaderVersion: String by project
 val minecraftVersion: String by project
@@ -5,29 +7,12 @@ val javaVersion = JavaVersion.VERSION_21
 
 plugins {
     id("fabric-loom")
+    id("com.modrinth.minotaur")
 }
 
 base {
     val archivesBaseName: String by project
     archivesName.set("$archivesBaseName-$modVersion-$minecraftVersion")
-}
-
-repositories {
-    maven {
-        name = "CurseMaven"
-        url = uri("https://cursemaven.com")
-        content {
-            includeGroup("curse.maven")
-        }
-    }
-
-    maven {
-        name = "Modrinth"
-        url = uri("https://api.modrinth.com/maven")
-        content {
-            includeGroup("maven.modrinth")
-        }
-    }
 }
 
 dependencies {
@@ -39,7 +24,32 @@ dependencies {
     modImplementation("net.fabricmc", "fabric-loader", loaderVersion)
 }
 
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("ducky-updater-lib")
+    versionName.set("Ducky Updater Lib $modVersion")
+    versionNumber.set(modVersion)
+    versionType.set("release")
+    uploadFile.set(tasks.remapJar)
+    additionalFiles.add(tasks.remapSourcesJar)
+    gameVersions.addAll("1.21.6")
+    loaders.add("fabric")
+    changelog.set(rootProject.file("CHANGELOG.md").readText())
+}
+
 tasks {
+
+    named("modrinth").configure {
+        @Suppress("UnstableApiUsage") doLast {
+            (this@configure as TaskModrinthUpload).uploadInfo?.let {
+                "https://modrinth.com/mod/ducky-updater-lib/version/${it.id}".apply {
+                    println(this)
+                    rootProject.file("build/modrinth_url.txt").writeText(this)
+                }
+            } ?: return@doLast
+        }
+    }
+
     withType<JavaCompile> {
         options.encoding = "UTF-8"
         sourceCompatibility = javaVersion.toString()
@@ -47,19 +57,9 @@ tasks {
         options.release.set(javaVersion.toString().toInt())
     }
 
-    jar {
-        from("LICENSE")
-    }
-
     processResources {
         filesMatching("fabric.mod.json") {
-            expand(
-                mutableMapOf(
-                    "version" to modVersion,
-                    "loaderVersion" to loaderVersion,
-                    "javaVersion" to javaVersion.toString()
-                )
-            )
+            expand(mutableMapOf("version" to modVersion))
         }
     }
 
