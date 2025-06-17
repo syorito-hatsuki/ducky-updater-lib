@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.net.URI;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -40,11 +41,8 @@ public abstract class ClientPlayerEntityMixin {
                 }
                 sendMessage(Text.literal(" - ").append(StringUtil.updateText(pair, updateData)).styled(style ->
                         style.withHoverEvent(
-                                new HoverEvent(
-                                        HoverEvent.Action.SHOW_TEXT,
-                                        Text.literal(updateData.changelog())
-                                )
-                        ).withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, updateData.fileUrl()))
+                                new HoverEvent.ShowText(Text.literal(updateData.changelog()))
+                        ).withClickEvent(new ClickEvent.OpenUrl(URI.create(updateData.fileUrl())))
                 ), false);
             }));
         });

@@ -1,7 +1,7 @@
 val modVersion: String by project
 val loaderVersion: String by project
 val minecraftVersion: String by project
-val javaVersion = JavaVersion.VERSION_17
+val javaVersion = JavaVersion.VERSION_21
 
 plugins {
     id("fabric-loom")
