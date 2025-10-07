@@ -25,6 +25,7 @@ public final class DuckyUpdater {
     public static void fetchUpdates() {
         try (var executor = Executors.newSingleThreadExecutor()) {
             executor.execute(() -> FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
+
                 if (modContainer.getMetadata().getCustomValue("duckyupdater") == null) return;
 
                 try (var client = HttpClient.newHttpClient()) {

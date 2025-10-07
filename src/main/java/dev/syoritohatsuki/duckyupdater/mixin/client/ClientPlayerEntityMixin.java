@@ -2,6 +2,7 @@ package dev.syoritohatsuki.duckyupdater.mixin.client;
 
 import dev.syoritohatsuki.duckyupdater.DuckyUpdater;
 import dev.syoritohatsuki.duckyupdater.StringUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -36,16 +37,18 @@ public abstract class ClientPlayerEntityMixin {
                 AtomicBoolean firstLine = new AtomicBoolean(true);
 
                 DuckyUpdater.getUpdateDataHashMap().forEach(((pair, updateData) -> {
-                    if (firstLine.get()) {
-                        sendMessage(Text.literal("Updates available").styled(style ->
-                                style.withBold(true).withColor(Formatting.YELLOW)), false);
-                        firstLine.set(false);
-                    }
-                    sendMessage(Text.literal(" - ").append(StringUtil.updateText(pair, updateData)).styled(style ->
-                            style.withHoverEvent(
-                                    new HoverEvent.ShowText(Text.literal(updateData.changelog()))
-                            ).withClickEvent(new ClickEvent.OpenUrl(URI.create(updateData.fileUrl())))
-                    ), false);
+                    MinecraftClient.getInstance().execute(() -> {
+                        if (firstLine.get()) {
+                            sendMessage(Text.literal("Updates available").styled(style ->
+                                    style.withBold(true).withColor(Formatting.YELLOW)), false);
+                            firstLine.set(false);
+                        }
+                        sendMessage(Text.literal(" - ").append(StringUtil.updateText(pair, updateData)).styled(style ->
+                                style.withHoverEvent(
+                                        new HoverEvent.ShowText(Text.literal(updateData.changelog()))
+                                ).withClickEvent(new ClickEvent.OpenUrl(URI.create(updateData.fileUrl())))
+                        ), false);
+                    });
                 }));
             });
         }
