@@ -33,7 +33,6 @@ public abstract class MinecraftDedicatedServerMixin {
 
                 DuckyUpdater.getUpdateDataHashMap().forEach((ducky, updateData) -> {
 
-                    DuckyUpdater.LOGGER.info("FOOOR: {}", updateData.fileUrl());
                     if (firstLine.get()) {
                         DuckyUpdater.LOGGER.info("");
                         DuckyUpdater.LOGGER.info("{}{}Updates available{}", BOLD, YELLOW, RESET);
