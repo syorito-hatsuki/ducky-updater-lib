@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.logging.LogUtils;
 import dev.syoritohatsuki.duckyupdater.dto.UpdateData;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Pair;
+import net.minecraft.util.Tuple;
 import org.slf4j.Logger;
 
 import java.net.URI;
@@ -20,7 +20,7 @@ public final class DuckyUpdater {
 
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final Gson GSON = new Gson();
-    private static final HashMap<Pair<String, String>, UpdateData> UPDATE_DATA_HASH_MAP = new HashMap<>();
+    private static final HashMap<Tuple<String, String>, UpdateData> UPDATE_DATA_HASH_MAP = new HashMap<>();
 
     public static void fetchUpdates() {
         try (var executor = Executors.newSingleThreadExecutor()) {
@@ -57,7 +57,7 @@ public final class DuckyUpdater {
 
                     if (!updateData.type().equals(type)) return;
 
-                    UPDATE_DATA_HASH_MAP.put(new Pair<>(modContainer.getMetadata().getName(), modContainer.getMetadata().getVersion().getFriendlyString()), updateData);
+                    UPDATE_DATA_HASH_MAP.put(new Tuple<>(modContainer.getMetadata().getName(), modContainer.getMetadata().getVersion().getFriendlyString()), updateData);
                 } catch (Exception e) {
                     if (e instanceof JsonSyntaxException) return;
                     LOGGER.warn("Can't get update for {}", modContainer.getMetadata().getId(), e);
@@ -68,7 +68,7 @@ public final class DuckyUpdater {
         }
     }
 
-    public static HashMap<Pair<String, String>, UpdateData> getUpdateDataHashMap() {
+    public static HashMap<Tuple<String, String>, UpdateData> getUpdateDataHashMap() {
         return UPDATE_DATA_HASH_MAP;
     }
 }

@@ -2,11 +2,11 @@ package dev.syoritohatsuki.duckyupdater;
 
 import dev.syoritohatsuki.duckyupdater.dto.UpdateData;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Tuple;
 
 public final class StringUtil {
 
@@ -30,7 +30,7 @@ public final class StringUtil {
         var featuredObject = duckyUpdaterObject.get("featured");
         if (featuredObject != null) featured = featuredObject.getAsBoolean();
 
-        return "https://api.modrinth.com/v2/project/" + modrinthId.getAsString() + "/version?loaders=[%22fabric%22]&game_versions=[%22" + SharedConstants.getGameVersion().name() + "%22]&featured=" + featured;
+        return "https://api.modrinth.com/v2/project/" + modrinthId.getAsString() + "/version?loaders=[%22fabric%22]&game_versions=[%22" + SharedConstants.getCurrentVersion().name() + "%22]&featured=" + featured;
     }
 
     public static String match(char[] oldVersion, char[] newVersion) {
@@ -50,19 +50,19 @@ public final class StringUtil {
         return "syorito-hatsuki/ducky-updater-lib/ + " + modContainer.getMetadata().getVersion().getFriendlyString() + "(syorito-hatsuki.dev)";
     }
 
-    public static MutableText updateText(Pair<String, String> pair, UpdateData updateData) {
-        final String common = StringUtil.match(pair.getRight().toCharArray(), updateData.remoteVersion().toCharArray());
+    public static MutableComponent updateText(Tuple<String, String> pair, UpdateData updateData) {
+        final String common = StringUtil.match(pair.getB().toCharArray(), updateData.remoteVersion().toCharArray());
 
-        final String oldVersion = pair.getRight().replace(common, "");
+        final String oldVersion = pair.getB().replace(common, "");
         final String newVersion = updateData.remoteVersion().replace(common, "");
 
-        return Text.literal(pair.getLeft())
-                .append(Text.literal(" [").formatted(Formatting.DARK_GRAY))
-                .append(Text.literal(common).formatted(Formatting.GRAY))
-                .append(Text.literal(oldVersion).formatted(Formatting.RED))
-                .append(Text.literal(" -> ").formatted(Formatting.DARK_GRAY))
-                .append(Text.literal(common).formatted(Formatting.GRAY))
-                .append(Text.literal(newVersion).formatted(Formatting.GREEN))
-                .append(Text.literal("]").formatted(Formatting.DARK_GRAY));
+        return Component.literal(pair.getA())
+                .append(Component.literal(" [").withStyle(ChatFormatting.DARK_GRAY))
+                .append(Component.literal(common).withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(oldVersion).withStyle(ChatFormatting.RED))
+                .append(Component.literal(" -> ").withStyle(ChatFormatting.DARK_GRAY))
+                .append(Component.literal(common).withStyle(ChatFormatting.GRAY))
+                .append(Component.literal(newVersion).withStyle(ChatFormatting.GREEN))
+                .append(Component.literal("]").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

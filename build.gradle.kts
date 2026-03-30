@@ -1,60 +1,65 @@
 import com.modrinth.minotaur.TaskModrinthUpload
 
+val archivesBaseName: String by project
 val modVersion: String by project
-val loaderVersion: String by project
-val minecraftVersion: String by project
-val javaVersion = JavaVersion.VERSION_21
+val mavenGroup: String by project
+
+val javaVersion = JavaVersion.VERSION_25
 
 plugins {
-    id("fabric-loom")
-    id("com.modrinth.minotaur")
+    alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.minotaur)
 }
 
 base {
-    val archivesBaseName: String by project
-    archivesName.set("$archivesBaseName-$modVersion-$minecraftVersion")
+    archivesName.set(archivesBaseName)
 }
 
-dependencies {
-    minecraft("com.mojang", "minecraft", minecraftVersion)
- 
-    val yarnMappings: String by project
-    mappings("net.fabricmc", "yarn", yarnMappings, null, "v2")
+group = mavenGroup
+version = modVersion
 
-    modImplementation("net.fabricmc", "fabric-loader", loaderVersion)
+dependencies {
+    minecraft(libs.minecraft)
+    implementation(libs.fabric.loader)
 }
 
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
-    projectId.set("ducky-updater-lib")
+    projectId.set(archivesBaseName)
     versionName.set("Ducky Updater Lib $modVersion")
     versionNumber.set(modVersion)
     versionType.set("release")
-    uploadFile.set(tasks.remapJar)
-    additionalFiles.add(tasks.remapSourcesJar)
-    gameVersions.addAll("1.21.9", "1.21.10", "1.21.11")
+    uploadFile.set(tasks.jar)
+    project.afterEvaluate {
+        tasks.findByName("sourcesJar")?.let {
+            additionalFiles.add(it)
+        }
+    }
+    gameVersions.addAll(
+        "26.1"
+    )
     loaders.add("fabric")
     changelog.set(rootProject.file("CHANGELOG.md").readText())
 }
 
-tasks {
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion.toString()))
+    }
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    withSourcesJar()
+}
 
+tasks {
     named("modrinth").configure {
         @Suppress("UnstableApiUsage") doLast {
             (this@configure as TaskModrinthUpload).uploadInfo?.let {
-                "https://modrinth.com/mod/ducky-updater-lib/version/${it.id}".apply {
-                    println(this)
-                    rootProject.file("build/modrinth_url.txt").writeText(this)
-                }
+                rootProject.file("build/modrinth_url.txt").writeText(
+                    "https://modrinth.com/mod/${archivesBaseName}/version/${it.id}".apply(::println)
+                )
             } ?: return@doLast
         }
-    }
-
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        sourceCompatibility = javaVersion.toString()
-        targetCompatibility = javaVersion.toString()
-        options.release.set(javaVersion.toString().toInt())
     }
 
     processResources {
@@ -63,12 +68,10 @@ tasks {
         }
     }
 
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(javaVersion.toString()))
-        }
-        sourceCompatibility = javaVersion
-        targetCompatibility = javaVersion
-        withSourcesJar()
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        sourceCompatibility = javaVersion.toString()
+        targetCompatibility = javaVersion.toString()
+        options.release.set(javaVersion.toString().toInt())
     }
 }

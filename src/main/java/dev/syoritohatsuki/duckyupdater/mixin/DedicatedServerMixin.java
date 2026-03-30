@@ -2,7 +2,7 @@ package dev.syoritohatsuki.duckyupdater.mixin;
 
 import dev.syoritohatsuki.duckyupdater.DuckyUpdater;
 import dev.syoritohatsuki.duckyupdater.StringUtil;
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,14 +16,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.syoritohatsuki.duckyupdater.StringUtil.*;
 
-@Mixin(MinecraftDedicatedServer.class)
-public abstract class MinecraftDedicatedServerMixin {
+@Mixin(DedicatedServer.class)
+public abstract class DedicatedServerMixin {
 
     @Shadow
     @Final
-    static Logger LOGGER;
+    private static Logger LOGGER;
 
-    @Inject(method = "setupServer", at = @At("TAIL"))
+    @Inject(method = "initServer", at = @At("TAIL"))
     protected void runServerReturn(CallbackInfoReturnable<Boolean> cir) {
 
         try (var executor = Executors.newSingleThreadExecutor()) {
@@ -39,11 +39,11 @@ public abstract class MinecraftDedicatedServerMixin {
                         firstLine.set(false);
                     }
 
-                    var oldVersion = ducky.getRight();
+                    var oldVersion = ducky.getB();
                     var newVersion = updateData.remoteVersion();
                     var common = StringUtil.match(oldVersion.toCharArray(), newVersion.toCharArray());
 
-                    DuckyUpdater.LOGGER.info("\t- {} {}[{}{}{}{}{} -> {}{}{}{}{}]{}", ducky.getLeft(), GRAY, BRIGHT_GRAY, common, BRIGHT_RED, oldVersion.replace(common, ""), GRAY, BRIGHT_GRAY, common, BRIGHT_GREEN, newVersion.replace(common, ""), GRAY, RESET);
+                    DuckyUpdater.LOGGER.info("\t- {} {}[{}{}{}{}{} -> {}{}{}{}{}]{}", ducky.getA(), GRAY, BRIGHT_GRAY, common, BRIGHT_RED, oldVersion.replace(common, ""), GRAY, BRIGHT_GRAY, common, BRIGHT_GREEN, newVersion.replace(common, ""), GRAY, RESET);
 
                 });
 
