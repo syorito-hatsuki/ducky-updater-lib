@@ -61,6 +61,6 @@ public abstract class LocalPlayerMixin {
 
     @Unique
     private void sendMessageWithoutOverlay(Component component) {
-        minecraft.getChatListener().handleSystemMessage(component, false);
+        minecraft.gui.chatListener().handleSystemMessage(component, false);
     }
 }

@@ -36,7 +36,7 @@ modrinth {
         }
     }
     gameVersions.addAll(
-        "26.1"
+        "26.2"
     )
     loaders.add("fabric")
     changelog.set(rootProject.file("CHANGELOG.md").readText())
@@ -64,7 +64,11 @@ tasks {
 
     processResources {
         filesMatching("fabric.mod.json") {
-            expand(mutableMapOf("version" to modVersion))
+            expand(mutableMapOf(
+                "version" to modVersion,
+                "fabricLoaderVersion" to libs.fabric.loader.get().version.toString(),
+                "minecraftVersion" to libs.minecraft.get().version.toString()
+            ))
         }
     }
 

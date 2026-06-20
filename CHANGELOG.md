@@ -1,2 +1,1 @@
-* Updated to 26.1
-    * Switched from Yarn to Mojmaps
+* Updated to 26.2

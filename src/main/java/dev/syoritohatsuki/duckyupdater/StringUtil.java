@@ -1,12 +1,12 @@
 package dev.syoritohatsuki.duckyupdater;
 
+import com.mojang.datafixers.util.Pair;
 import dev.syoritohatsuki.duckyupdater.dto.UpdateData;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Tuple;
 
 public final class StringUtil {
 
@@ -50,13 +50,13 @@ public final class StringUtil {
         return "syorito-hatsuki/ducky-updater-lib/ + " + modContainer.getMetadata().getVersion().getFriendlyString() + "(syorito-hatsuki.dev)";
     }
 
-    public static MutableComponent updateText(Tuple<String, String> pair, UpdateData updateData) {
-        final String common = StringUtil.match(pair.getB().toCharArray(), updateData.remoteVersion().toCharArray());
+    public static MutableComponent updateText(Pair<String, String> pair, UpdateData updateData) {
+        final String common = StringUtil.match(pair.getSecond().toCharArray(), updateData.remoteVersion().toCharArray());
 
-        final String oldVersion = pair.getB().replace(common, "");
+        final String oldVersion = pair.getSecond().replace(common, "");
         final String newVersion = updateData.remoteVersion().replace(common, "");
 
-        return Component.literal(pair.getA())
+        return Component.literal(pair.getFirst())
                 .append(Component.literal(" [").withStyle(ChatFormatting.DARK_GRAY))
                 .append(Component.literal(common).withStyle(ChatFormatting.GRAY))
                 .append(Component.literal(oldVersion).withStyle(ChatFormatting.RED))

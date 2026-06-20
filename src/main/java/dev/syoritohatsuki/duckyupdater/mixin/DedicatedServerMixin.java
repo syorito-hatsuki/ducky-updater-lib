@@ -39,11 +39,11 @@ public abstract class DedicatedServerMixin {
                         firstLine.set(false);
                     }
 
-                    var oldVersion = ducky.getB();
+                    var oldVersion = ducky.getSecond();
                     var newVersion = updateData.remoteVersion();
                     var common = StringUtil.match(oldVersion.toCharArray(), newVersion.toCharArray());
 
-                    DuckyUpdater.LOGGER.info("\t- {} {}[{}{}{}{}{} -> {}{}{}{}{}]{}", ducky.getA(), GRAY, BRIGHT_GRAY, common, BRIGHT_RED, oldVersion.replace(common, ""), GRAY, BRIGHT_GRAY, common, BRIGHT_GREEN, newVersion.replace(common, ""), GRAY, RESET);
+                    DuckyUpdater.LOGGER.info("\t- {} {}[{}{}{}{}{} -> {}{}{}{}{}]{}", ducky.getFirst(), GRAY, BRIGHT_GRAY, common, BRIGHT_RED, oldVersion.replace(common, ""), GRAY, BRIGHT_GRAY, common, BRIGHT_GREEN, newVersion.replace(common, ""), GRAY, RESET);
 
                 });
 
